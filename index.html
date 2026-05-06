@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observatório de Equidade Educacional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ======================================================
+       VARIÁVEIS E RESET
+    ====================================================== */
+    :root {
+      --cor-principal: #A0411E;
+      --cor-laranja: #E67E22;
+      --cor-bege: #F4D5B6;
+      --cor-texto: #5D4037;
+      --cor-fundo: #FFF9F5;
+      --cor-card-bg: #ffffff;
+      --cor-sombra: rgba(160, 65, 30, 0.08);
+      --cor-sombra-hover: rgba(160, 65, 30, 0.18);
+      --border-radius: 20px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ======================================================
+       HERO / HEADER
+    ====================================================== */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, var(--cor-principal) 0%, #c0522a 40%, var(--cor-laranja) 100%);
+      padding: 60px 40px 80px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    /* Padrão geométrico sutil */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(30deg, rgba(255,255,255,0.03) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.03) 87.5%),
+        linear-gradient(150deg, rgba(255,255,255,0.03) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.03) 87.5%),
+        linear-gradient(30deg, rgba(255,255,255,0.03) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.03) 87.5%),
+        linear-gradient(150deg, rgba(255,255,255,0.03) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,0.03) 87.5%);
+      background-size: 80px 140px;
+      background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+
+    .logo-container {
+      display: inline-block;
+      background: white;
+      border-radius: 18px;
+      padding: 15px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+
+    .logo-container img { height: 70px; display: block; }
+
+    .hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: white;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 300;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+/* ======================================================
+       SEÇÃO DE CARDS
+    ====================================================== */
+    .section-title {
+      text-align: center;
+      margin: 50px 0 10px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--cor-principal);
+    }
+
+    .section-subtitle {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 0.95rem;
+      color: #999;
+      font-weight: 400;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 30px 60px;
+    }
+
+    /* ======================================================
+       CARD
+    ====================================================== */
+    .card {
+      background: var(--cor-card-bg);
+      border-radius: var(--border-radius);
+      padding: 36px 28px 28px;
+      text-decoration: none;
+      color: var(--cor-texto);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 16px var(--cor-sombra);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      border: 1px solid rgba(160, 65, 30, 0.06);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px var(--cor-sombra-hover);
+      border-color: rgba(230, 126, 34, 0.25);
+    }
+
+    .card:hover .card-icon { transform: scale(1.1); }
+    .card:hover .card-icon svg { stroke: var(--cor-principal); }
+    .card:hover .card-tag { background: var(--cor-principal); color: white; }
+
+    /* Linha decorativa superior */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--cor-principal), var(--cor-laranja));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    /* Ícone */
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--cor-bege) 0%, #FFF0E0 100%);
+      transition: transform 0.35s ease;
+    }
+
+    .card-icon svg {
+      width: 38px;
+      height: 38px;
+      stroke: var(--cor-laranja);
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.3s ease;
+    }
+
+    /* Título */
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--cor-texto);
+      line-height: 1.35;
+    }
+
+    /* Descrição */
+    .card p {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.55;
+      flex-grow: 1;
+      margin-bottom: 16px;
+    }
+
+    /* Tag */
+    .card-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: var(--cor-bege);
+      color: var(--cor-principal);
+      transition: all 0.3s ease;
+    }
+
+    /* ======================================================
+       FOOTER
+    ====================================================== */
+    .footer {
+      text-align: center;
+      padding: 30px 20px 40px;
+      color: #aaa;
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(160, 65, 30, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .footer span { color: var(--cor-laranja); font-weight: 600; }
+
+    /* ======================================================
+       RESPONSIVIDADE
+    ====================================================== */
+    @media (max-width: 768px) {
+      .hero { padding: 40px 20px 60px; }
+      .logo-container img { height: 50px; }
+      .cards-grid { padding: 0 16px 40px; gap: 20px; }
+      .card.destaque {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 24px;
+      }
+      .card.destaque .card-icon { margin-right: 0; margin-bottom: 16px; }
+    }
+
+    @media (max-width: 400px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo-container">
+        <img src="logo_observatorio.png" alt="Logo do Observatório de Equidade Educacional">
+      </div>
+      <h1>Estudos sobre Fator Amazônia Legal</h1>
+      <p>Análises comparativas sobre financiamento, infraestrutura e indicadores educacionais entre a Amazônia Legal e o Restante do Brasil</p>
+    </div>
+  </section>
+
+  <!-- ===== RELATÓRIOS: ESTRUTURA E ACESSO ===== -->
+  <h2 class="section-title">Estrutura, Acesso e Qualidade</h2>
+  <p class="section-subtitle">Análises comparativas sobre indicadores estruturais, logísticos e de desempenho</p>
+
+  <div class="cards-grid">
+
+    <!-- 1. Panorama Amazônia Legal -->
+    <a href="relatorio_amazonia_legal.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <h3>Panorama da Amazônia Legal</h3>
+      <p>Visão geral da região, perfil demográfico, educacional e socioeconômico dos 772 municípios amazônicos.</p>
+      <span class="card-tag">Panorama</span>
+    </a>
+
+    <!-- 2. Indicadores Educacionais -->
+    <a href="relatorio_indicadores_educacionais.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+          <line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+      </div>
+      <h3>Indicadores Educacionais</h3>
+      <p>Taxas de aprovação, reprovação, abandono, distorção idade-série e fluxo escolar por etapa de ensino.</p>
+      <span class="card-tag">Indicadores</span>
+    </a>
+
+    <!-- 3. IDEB -->
+    <a href="relatorio_ideb.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+          <path d="M12 2v2"/>
+          <path d="m9 6 3 2 3-2"/>
+        </svg>
+      </div>
+      <h3>IDEB</h3>
+      <p>Índice de Desenvolvimento da Educação Básica: notas, metas, evolução temporal e comparação regional.</p>
+      <span class="card-tag">Qualidade</span>
+    </a>
+
+    <!-- 5. Complexidade Logística -->
+    <a href="relatorio_complexidade_logistica.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+        </svg>
+      </div>
+      <h3>Complexidade Logística Escolar</h3>
+      <p>Dispersão geográfica, isolamento escolar, malha rodoviária, hidrovias, ICLE e infraestrutura de acessibilidade.</p>
+      <span class="card-tag">Logística</span>
+    </a>
+
+    <!-- 6. Vulnerabilidade Climática -->
+    <a href="relatorio_vulnerabilidade_climatica.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/>
+          <line x1="8" y1="16" x2="8" y2="20"/>
+          <line x1="12" y1="18" x2="12" y2="22"/>
+          <line x1="16" y1="16" x2="16" y2="20"/>
+        </svg>
+      </div>
+      <h3>Vulnerabilidade Climática</h3>
+      <p>Precipitação, sazonalidade, queimadas, rede hidrológica e impacto no calendário escolar da Amazônia Legal.</p>
+      <span class="card-tag">Clima</span>
+    </a>
+
+    <!-- 7. Conectividade Escolar -->
+    <a href="relatorio_conectividade.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 20h.01"/>
+          <path d="M2 8.82a15 15 0 0 1 20 0"/>
+          <path d="M5 12.86a10 10 0 0 1 14 0"/>
+          <path d="M8.5 16.9a5 5 0 0 1 7 0"/>
+          <circle cx="12" cy="20" r="1"/>
+        </svg>
+      </div>
+      <h3>Conectividade Escolar</h3>
+      <p>Internet, banda larga, equipamentos tecnologicos e investimento em TIC nas escolas da Amazonia Legal.</p>
+      <span class="card-tag">Conectividade</span>
+    </a>
+
+  </div>
+
+  <!-- ===== RELATÓRIOS: CUSTOS EDUCACIONAIS ===== -->
+  <h2 class="section-title">Custos e Financiamento Educacional</h2>
+  <p class="section-subtitle">Análises sobre despesas, receitas e investimento na educação</p>
+
+  <div class="cards-grid">
+
+    <!-- 8. Financiamento SIOPE -->
+    <a href="relatorio_siope.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <h3>Financiamento da Educação (SIOPE)</h3>
+      <p>Receitas, despesas por subfunção, investimento por aluno, FUNDEB, remuneração docente e indicadores orçamentários.</p>
+      <span class="card-tag">Financiamento</span>
+    </a>
+
+    <!-- 9. Transporte Escolar -->
+    <a href="relatorio_transporte.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M8 6v6"/>
+          <path d="M15 6v6"/>
+          <path d="M2 12h19.6"/>
+          <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/>
+          <circle cx="7" cy="18" r="2"/>
+          <circle cx="17" cy="18" r="2"/>
+        </svg>
+      </div>
+      <h3>Transporte Escolar</h3>
+      <p>Preços de combustível, custo de deslocamento por escola, sobrecusto logístico e consumo de diesel.</p>
+      <span class="card-tag">Transporte</span>
+    </a>
+
+    <!-- 10. Alimentação Escolar -->
+    <a href="relatorio_alimentacao.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+          <path d="M7 2v20"/>
+          <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+        </svg>
+      </div>
+      <h3>Alimentação Escolar</h3>
+      <p>Despesa por aluno com merenda, infraestrutura de cozinha e refeitório, profissionais de alimentação.</p>
+      <span class="card-tag">Alimentação</span>
+    </a>
+
+    <!-- 11. Infraestrutura Escolar -->
+    <a href="relatorio_infraestrutura.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+          <line x1="9" y1="6" x2="9" y2="6.01"/>
+          <line x1="15" y1="6" x2="15" y2="6.01"/>
+          <line x1="9" y1="10" x2="9" y2="10.01"/>
+          <line x1="15" y1="10" x2="15" y2="10.01"/>
+          <line x1="9" y1="14" x2="9" y2="14.01"/>
+          <line x1="15" y1="14" x2="15" y2="14.01"/>
+          <path d="M9 18h6v4H9z"/>
+        </svg>
+      </div>
+      <h3>Infraestrutura Escolar</h3>
+      <p>Despesas de capital em obras, equipamentos e instalações, cruzamento com carências do Censo Escolar.</p>
+      <span class="card-tag">Infraestrutura</span>
+    </a>
+
+    <!-- 12. Transporte Escolar (SIOPE) -->
+    <a href="relatorio_transporte_siope.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 6V16C4 17.1 4.9 18 6 18H7L8 20H10L11 18H13L14 20H16L17 18H18C19.1 18 20 17.1 20 16V6C20 3.5 17.5 2 12 2C6.5 2 4 3.5 4 6Z"/>
+          <line x1="4" y1="10" x2="20" y2="10"/>
+          <circle cx="7.5" cy="14.5" r="1.5"/>
+          <circle cx="16.5" cy="14.5" r="1.5"/>
+        </svg>
+      </div>
+      <h3>Transporte Escolar (SIOPE)</h3>
+      <p>Custos com transporte escolar, combustíveis, auxílios e veículos na Amazônia Legal via SIOPE 2024.</p>
+      <span class="card-tag">Transporte</span>
+    </a>
+
+    <!-- 13. FUNDEB e Financiamento -->
+    <a href="relatorio_fundeb.html" class="card">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="6" width="20" height="12" rx="2"/>
+          <circle cx="12" cy="12" r="3"/>
+          <line x1="6" y1="12" x2="6" y2="12.01"/>
+          <line x1="18" y1="12" x2="18" y2="12.01"/>
+        </svg>
+      </div>
+      <h3>FUNDEB e Financiamento</h3>
+      <p>Grupos de custo, comprometimento orçamentário com MDE, remuneração dos profissionais e razão professor/aluno.</p>
+      <span class="card-tag">FUNDEB</span>
+    </a>
+
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <span>Observatório de Equidade Educacional</span><br>
+    Dados: SIOPE 2024 &middot; Censo Escolar 2025 &middot; IDEB &middot; ANP &middot; INMET &middot; INPE &middot; ANA &middot; SNV &middot; SICONFI
+  </footer>
+
+</body>
+</html>
