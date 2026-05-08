@@ -7,7 +7,7 @@
 
         <meta name="author" content="Rodrigo Lins Rodrigues" />
     
-        <meta name="date" content="2026-05-05" />
+        <meta name="date" content="2026-05-08" />
     
     <title>Alimentação Escolar: Amazônia Legal vs Restante do Brasil</title>
 
@@ -1556,13 +1556,19 @@ Restante do Brasil</a></h2>
       UF</a></li>
       </ul></li>
       <li><a href="#s%C3%ADntese-comparativa" id="toc-síntese-comparativa">Síntese Comparativa</a></li>
-      <li><a href="#metodologia" id="toc-metodologia">Metodologia</a></li>
+      <li><a href="#metodologia" id="toc-metodologia">Metodologia</a>
+      <ul>
+      <li><a href="#pr%C3%A9-processamento-e-limpeza-dos-dados" id="toc-pré-processamento-e-limpeza-dos-dados">Pré-processamento e
+      Limpeza dos Dados</a></li>
+      <li><a href="#tratamentos-espec%C3%ADficos" id="toc-tratamentos-específicos">Tratamentos Específicos</a></li>
+      <li><a href="#limita%C3%A7%C3%B5es" id="toc-limitações">Limitações</a></li>
+      </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Rodrigo
 Lins Rodrigues</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2026-05-05</p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2026-05-08</p>
           </div>
    </div>
      
@@ -5656,20 +5662,124 @@ Lista dos 772 municípios da Amazônia Legal em 9 UFs
 </tr>
 </tbody>
 </table>
-<p>A análise considerou apenas escolas públicas (federais, estaduais e
-municipais) da educação básica em atividade. A classificação dos
-municípios da Amazônia Legal segue a lista oficial do IBGE (772
-municípios em 9 UFs: AC, AM, AP, MA, MT, PA, RO, RR, TO). Para integrar
-os dados do Censo Escolar 2025 com o SIOPE 2024, utilizou-se o código do
-município (CO_MUNICIPIO do IBGE com 7 dígitos no Censo, convertido para
-6 dígitos para compatibilidade com o SIOPE). As despesas com alimentação
-escolar correspondem à subfunção 306 (Alimentação e Nutrição) do
-orçamento público, considerando-se as despesas pagas (efetivamente
-transferidas) do 6o bimestre (acumulado anual). O indicador de despesa
-por aluno foi calculado dividindo a despesa paga total pelo número de
-matrículas na educação básica pública registradas no Censo Escolar 2025.
-As medidas de tendência central utilizam a mediana quando indicado, por
-ser mais robusta a valores extremos do que a média.</p>
+<div id="pré-processamento-e-limpeza-dos-dados" class="section level2">
+<h2>Pré-processamento e Limpeza dos Dados</h2>
+<p>A leitura dos microdados do Censo Escolar 2025 é feita com
+<code>fread()</code> do pacote data.table. Os arquivos CSV do Censo
+utilizam separador ponto-e-vírgula (;) e codificação Latin-1, enquanto
+os arquivos SIOPE utilizam UTF-8. Para cada fonte, aplica-se a
+codificação correta no parâmetro <code>encoding</code>. O parâmetro
+<code>select</code> é utilizado para importar apenas as colunas
+necessárias, reduzindo o consumo de memória.</p>
+<p>Na tabela de Escolas (Tabela_Escola_2025.csv), são importadas 22
+colunas: CO_ENTIDADE (código único da escola), SG_UF (sigla da UF),
+CO_MUNICIPIO (código IBGE de 7 dígitos), TP_DEPENDENCIA (1=Federal,
+2=Estadual, 3=Municipal, 4=Privada), TP_LOCALIZACAO (1=Urbana, 2=Rural),
+TP_LOCALIZACAO_DIFERENCIADA (0=Não se aplica, 1=Assentamento, 2=Terra
+indígena, 3=Quilombo, 4=Uso sustentável, 5=Ribeirinha),
+TP_SITUACAO_FUNCIONAMENTO, variáveis de infraestrutura hídrica
+(IN_AGUA_POTAVEL, IN_AGUA_REDE_PUBLICA, IN_AGUA_INEXISTENTE), variáveis
+de infraestrutura de alimentação (IN_COZINHA, IN_DESPENSA,
+IN_REFEITORIO, IN_AREA_PLANTIO), variáveis de profissionais
+(QT_PROF_NUTRICIONISTA, QT_PROF_ALIMENTACAO), indicador de oferta de
+alimentação (IN_ALIMENTACAO) e indicadores de oferta de etapas
+(IN_COMUM_CRECHE, IN_COMUM_PRE, IN_COMUM_FUND_AI, IN_COMUM_FUND_AF,
+IN_COMUM_MEDIO_MEDIO, IN_COMUM_MEDIO_INTEGRADO). Todas as variáveis IN_
+são binárias (0 ou 1) e as QT_ são inteiros.</p>
+<p>O primeiro filtro aplicado seleciona apenas escolas em atividade
+(TP_SITUACAO_FUNCIONAMENTO = 1), excluindo escolas extintas, paralisadas
+ou em processo de encerramento. Em seguida, cria-se um indicador
+derivado TEM_BASICA, que é TRUE quando a escola oferece ao menos uma
+etapa da educação básica (creche, pré-escola, fundamental anos iniciais
+ou finais, médio ou médio integrado). As análises subsequentes filtram
+apenas escolas públicas da educação básica (TP_DEPENDENCIA entre 1 e 3,
+e TEM_BASICA == TRUE), excluindo escolas privadas e aquelas que oferecem
+exclusivamente educação profissional ou superior.</p>
+<p>A classificação por localização diferenciada é recodificada de código
+numérico para texto descritivo via <code>fcase()</code>: assentamento,
+terra indígena, quilombo, comunidade ribeirinha, uso sustentável ou “Não
+se aplica”. A dependência administrativa também é recodificada (Federal,
+Estadual, Municipal, Privada) e a localização simplificada em
+Urbana/Rural.</p>
+<p>Na tabela de Matrículas (Tabela_Matricula_2025.csv), importam-se as
+colunas CO_ENTIDADE e contagens de matrícula por etapa (QT_MAT_BAS para
+educação básica total, QT_MAT_INF para infantil, QT_MAT_INF_CRE para
+creche, QT_MAT_INF_PRE para pré-escola, QT_MAT_FUND para fundamental,
+QT_MAT_FUND_AI e QT_MAT_FUND_AF para anos iniciais e finais, QT_MAT_MED
+para médio e QT_MAT_EJA para EJA). A junção com a tabela de escolas é
+feita por CO_ENTIDADE, e valores ausentes de QT_MAT_BAS são substituídos
+por zero.</p>
+<p>A classificação dos municípios da Amazônia Legal segue a lista
+oficial do IBGE (772 municípios em 9 UFs: AC, AM, AP, MA, MT, PA, RO,
+RR, TO), contida no arquivo municipios_amazonia_legal.csv. Para
+compatibilidade com o SIOPE (que usa código de 6 dígitos), cria-se
+COD_MUNI_6 truncando os 6 primeiros dígitos do código IBGE. A junção
+entre Censo Escolar e SIOPE utiliza o campo CO_MUNICIPIO do Censo (7
+dígitos) diretamente para a classificação regional das escolas, e
+COD_MUNI_6 para a junção com dados financeiros do SIOPE.</p>
+<p>Nos dados do SIOPE, as colunas financeiras (VAL_DESP_PAGA,
+VAL_DESP_EMPE, VAL_DESP_LIQU) são convertidas de formato texto
+brasileiro para numérico pela função <code>siope_num()</code>. A
+população (NUM_POPU) e o código do município (COD_MUNI) são convertidos
+para inteiro. Seleciona-se o 6º bimestre (NUM_PERI = 6) como referência
+anual acumulada, e filtra-se TIPO = “Municipal” para dados
+municipais.</p>
+</div>
+<div id="tratamentos-específicos" class="section level2">
+<h2>Tratamentos Específicos</h2>
+<p>As despesas com alimentação escolar são extraídas da base de Despesas
+por Função da Educação, filtrando a subfunção 306 (Alimentação e
+Nutrição), que corresponde à classificação funcional do orçamento
+público para gastos com merenda escolar, incluindo aquisição de gêneros
+alimentícios, pagamento de merendeiras e serviços terceirizados de
+alimentação. São consideradas as despesas pagas (NOM_COLU implícito no
+campo VAL_DESP_PAGA), que representam os recursos efetivamente
+transferidos do caixa.</p>
+<p>O indicador de despesa por aluno em alimentação é calculado dividindo
+a despesa paga total com subfunção 306 pelo número total de matrículas
+na educação básica pública (QT_MAT_BAS), agregadas por município ou por
+região conforme a análise. A despesa per capita (por habitante) utiliza
+a população declarada no SIOPE (NUM_POPU), obtida da base de Dados
+Gerais.</p>
+<p>A participação da alimentação no total de despesas educacionais é
+calculada somando as despesas da subfunção 306 por região e dividindo
+pelo total de despesas da Função 12 (todas as subfunções educacionais),
+utilizando a base completa de despesas por função carregada para
+contextualização.</p>
+<p>Os indicadores de infraestrutura de alimentação (percentual de
+escolas com cozinha, despensa, refeitório, água potável, área de
+plantio) são calculados pela razão entre o número de escolas com o
+respectivo indicador igual a 1 e o total de escolas públicas da educação
+básica em cada região. Os indicadores de profissionais (alunos por
+nutricionista, alunos por profissional de alimentação) dividem o total
+de alunos pelo total de profissionais de cada categoria por região,
+usando <code>pmax(total, 1)</code> para evitar divisão por zero.</p>
+<p>Para as análises por localização diferenciada (terra indígena,
+quilombo, ribeirinha, assentamento), as escolas são agrupadas pela
+variável TP_LOCALIZACAO_DIFERENCIADA e os indicadores são recalculados
+para cada subgrupo, permitindo identificar desigualdades internas à
+Amazônia Legal.</p>
+</div>
+<div id="limitações" class="section level2">
+<h2>Limitações</h2>
+<p>A defasagem temporal entre o Censo Escolar (2025) e o SIOPE (2024)
+implica que as matrículas e a infraestrutura escolar são do ano seguinte
+ao dos dados financeiros. Essa discrepância é considerada aceitável para
+fins de comparação regional, pois as variações ano a ano são
+marginais.</p>
+<p>As variáveis de infraestrutura do Censo Escolar são
+autodeclaratórias, preenchidas pelo responsável da escola, e podem não
+refletir com precisão a real condição dos equipamentos (uma cozinha pode
+existir mas estar inoperante, por exemplo). Os dados de profissionais
+(nutricionistas e merendeiras) referem-se ao quadro declarado, que pode
+divergir do efetivamente em exercício.</p>
+<p>O indicador de despesa por aluno em alimentação é uma média agregada
+que não diferencia o custo real da refeição por localização ou etapa de
+ensino. Escolas rurais e ribeirinhas na Amazônia Legal enfrentam custos
+logísticos significativamente maiores para receber gêneros alimentícios,
+mas esse sobrecusto não é diretamente mensurável com os dados
+disponíveis.</p>
+</div>
 </div>
 </div>
 
